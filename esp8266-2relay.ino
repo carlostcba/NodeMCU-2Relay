@@ -63,10 +63,11 @@ void handleRoot() {
   html += "button { padding: 10px 20px; font-size: 16px; margin: 10px; }";
   html += "</style>";
   html += "</head><body>";
-  html += "<h1>Control de Reles</h1>";
-  html += "<h2>Porton</h2>";
+  html += "<h1>\x02</h1>";
+  html += "<h1>Acceso Yrigoyen</h1>";
+  html += "<h2>Porton</h3>";
   html += "<button id='btn1' onclick='accionarRelay1()' " + String(btn1Enabled ? "" : "disabled") + ">Accionar</button>";
-  html += "<h2>Puerta</h2>";
+  html += "<h2>Puerta</h3>";
   html += "<button id='btn2' onclick='accionarRelay2()' " + String(btn2Enabled ? "" : "disabled") + ">Accionar</button>";
   html += "<script>";
   html += "function accionarRelay1() {";
