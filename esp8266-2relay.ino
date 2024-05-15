@@ -11,6 +11,10 @@ const int relayPin2 = D4;
 
 ESP8266WebServer server(80);
 
+// Variables para controlar el estado del botón
+bool btn1Enabled = true;
+bool btn2Enabled = true;
+
 void setup() {
   Serial.begin(115200);
 
@@ -52,13 +56,43 @@ void loop() {
 
 void handleRoot() {
   // Página principal con botones para controlar los Reles
-  String html = "<html><head><title>Control de Reles</title></head><body>";
+  String html = "<html><head><title>Control de Reles</title>";
+  html += "<script>";
+  html += "function accionarRelay1() {";
+  html += "if (" + String(btn1Enabled) + ") {";
+  html += "var btn1 = document.getElementById('btn1');";
+  html += "btn1.innerHTML = 'Accionando...';";
+  html += "btn1.disabled = true;";
+  html += "var xhr = new XMLHttpRequest();";
+  html += "xhr.open('GET', '/relay1on', true);";
+  html += "xhr.send();";
+  html += "setTimeout(function() {";
+  html += "btn1.innerHTML = 'Accionar';";
+  html += "btn1.disabled = false;";
+  html += "}, 500);"; // Después de 500 ms, volver a habilitar el botón y cambiar el texto a "Accionar"
+  html += "}";
+  html += "}";
+  html += "function accionarRelay2() {";
+  html += "if (" + String(btn2Enabled) + ") {";
+  html += "var btn2 = document.getElementById('btn2');";
+  html += "btn2.innerHTML = 'Accionando...';";
+  html += "btn2.disabled = true;";
+  html += "var xhr = new XMLHttpRequest();";
+  html += "xhr.open('GET', '/relay2on', true);";
+  html += "xhr.send();";
+  html += "setTimeout(function() {";
+  html += "btn2.innerHTML = 'Accionar';";
+  html += "btn2.disabled = false;";
+  html += "}, 500);"; // Después de 500 ms, volver a habilitar el botón y cambiar el texto a "Accionar"
+  html += "}";
+  html += "}";
+  html += "</script></head><body>";
   html += "<h1>Control de Porton</h1>";
   html += "<h2>Rele 1</h2>";
-  html += "<form action='/relay1on'><button>Accionar</button></form>";
+  html += "<button id='btn1' onclick='accionarRelay1()'>Accionar</button>";
   html += "<h1>Control de Puerta</h1>";
   html += "<h2>Rele 2</h2>";
-  html += "<form action='/relay2on'><button>Accionar</button></form>";
+  html += "<button id='btn2' onclick='accionarRelay2()'>Accionar</button>";
   html += "</body></html>";
   server.send(200, "text/html", html);
 }
@@ -68,8 +102,6 @@ void relay1On() {
   digitalWrite(relayPin1, LOW);
   delay(200); // Esperar 200 ms
   digitalWrite(relayPin1, HIGH); // Apagar el Rele 1
-  server.send(200, "text/plain", "Rele 1 encendido y apagado despues de 200 ms");
-  delay(500);
 }
 
 void relay2On() {
@@ -77,7 +109,4 @@ void relay2On() {
   digitalWrite(relayPin2, LOW);
   delay(200); // Esperar 200 ms
   digitalWrite(relayPin2, HIGH); // Apagar el Rele 2
-  server.send(200, "text/plain", "Rele 2 encendido y apagado despues de 200 ms");
-  delay(500);
 }
-
