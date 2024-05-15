@@ -9,10 +9,11 @@ const char* password = "LSDoor2023*";
 const int relayPin1 = D3;
 const int relayPin2 = D4;
 
-bool relay1Enabled = true; // Variable para habilitar/deshabilitar el botón de Relay 1
-unsigned long lastActionTime = 0; // Variable para guardar el tiempo del último accionamiento
-
 ESP8266WebServer server(80);
+
+// Variables para controlar el estado del botón
+bool btn1Enabled = true;
+bool btn2Enabled = true;
 
 void setup() {
   Serial.begin(115200);
@@ -51,35 +52,52 @@ void setup() {
 void loop() {
   // Manejar las solicitudes del servidor web
   server.handleClient();
-  
-  // Verificar si ha pasado el tiempo de inactividad del Relay 1
-  if (!relay1Enabled && (millis() - lastActionTime >= 500)) {
-    relay1Enabled = true; // Habilitar el botón de Relay 1
-    handleRoot(); // Actualizar la página para mostrar el botón habilitado
-  }
 }
 
 void handleRoot() {
   // Página principal con botones para controlar los Reles
   String html = "<html><head><title>Control de Reles</title>";
+  html += "<meta name='viewport' content='width=device-width, initial-scale=1'>";
+  html += "<style>";
+  html += "body { font-family: Arial, sans-serif; text-align: center; }";
+  html += "button { padding: 10px 20px; font-size: 16px; margin: 10px; }";
+  html += "</style>";
+  html += "</head><body>";
+  html += "<h1>Control de Reles</h1>";
+  html += "<h2>Rele 1</h2>";
+  html += "<button id='btn1' onclick='accionarRelay1()' " + String(btn1Enabled ? "" : "disabled") + ">Accionar</button>";
+  html += "<h2>Rele 2</h2>";
+  html += "<button id='btn2' onclick='accionarRelay2()' " + String(btn2Enabled ? "" : "disabled") + ">Accionar</button>";
   html += "<script>";
   html += "function accionarRelay1() {";
-  html += "if (!document.getElementById('btnRelay1').disabled) {"; // Verificar si el botón está habilitado
-  html += "document.getElementById('btnRelay1').disabled = true;"; // Deshabilitar el botón
-  html += "document.getElementById('btnRelay1').innerText = 'Accionando...';"; // Cambiar el texto del botón
+  html += "if (" + String(btn1Enabled) + ") {";
+  html += "var btn1 = document.getElementById('btn1');";
+  html += "btn1.innerHTML = 'Accionando...';";
+  html += "btn1.disabled = true;";
   html += "var xhr = new XMLHttpRequest();";
   html += "xhr.open('GET', '/relay1on', true);";
   html += "xhr.send();";
+  html += "setTimeout(function() {";
+  html += "btn1.innerHTML = 'Accionar';";
+  html += "btn1.disabled = false;";
+  html += "}, 500);"; // Después de 500 ms, volver a habilitar el botón y cambiar el texto a "Accionar"
   html += "}";
   html += "}";
-  html += "</script></head><body>";
-  html += "<h1>Control de Porton</h1>";
-  html += "<h2>Rele 1</h2>";
-  html += "<button id='btnRelay1' onclick='accionarRelay1()'>Accionar</button>";
-  html += "<h1>Control de Puerta</h1>";
-  html += "<h2>Rele 2</h2>";
-  html += "<form action='/relay2on'><button>Accionar</button></form>";
-  html += "</body></html>";
+  html += "function accionarRelay2() {";
+  html += "if (" + String(btn2Enabled) + ") {";
+  html += "var btn2 = document.getElementById('btn2');";
+  html += "btn2.innerHTML = 'Accionando...';";
+  html += "btn2.disabled = true;";
+  html += "var xhr = new XMLHttpRequest();";
+  html += "xhr.open('GET', '/relay2on', true);";
+  html += "xhr.send();";
+  html += "setTimeout(function() {";
+  html += "btn2.innerHTML = 'Accionar';";
+  html += "btn2.disabled = false;";
+  html += "}, 500);"; // Después de 500 ms, volver a habilitar el botón y cambiar el texto a "Accionar"
+  html += "}";
+  html += "}";
+  html += "</script></body></html>";
   server.send(200, "text/html", html);
 }
 
@@ -88,9 +106,8 @@ void relay1On() {
   digitalWrite(relayPin1, LOW);
   delay(200); // Esperar 200 ms
   digitalWrite(relayPin1, HIGH); // Apagar el Rele 1
-  lastActionTime = millis(); // Guardar el tiempo del último accionamiento
-  relay1Enabled = false; // Deshabilitar el botón de Relay 1
 }
+
 void relay2On() {
   // Encender el Rele 2
   digitalWrite(relayPin2, LOW);
