@@ -60,8 +60,8 @@ void handleRoot() {
   html += "<meta name='viewport' content='width=device-width, initial-scale=1'>";
   html += "<style>";
   html += "body { font-family: Calibri, sans-serif; text-align: center; background-color: #014a99; color: #f8f9fa; }";
-  html += "h1 { margin-top: 50px; }";
-  html += "h1 { margin-bottom: 20px; }";
+  html += "h1 { margin-top: 150px; }";
+  html += "h1 { margin-bottom: 50px; }";
   html += "h3 { color: #f29419; }";
   html += "h3 { margin-top: 20px; }";
   html += "button { padding: 10px 20px; font-size: 16px; margin: 10px; background-color: #ffc107; border: none; border-radius: 8px; color: #f8f9fa; font-weight: bold; }";
