@@ -1,83 +1,42 @@
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
+// Incluir librerías necesarias
+#include <Arduino.h>
 
-// Cambia estos valores según tu configuración de red
-const char* ssid = "doorLS";
-const char* password = "LSDoor2023*";
+// Definir los pines
+#define BOTON_PIN 2    // Pin del botón
+#define RELE_PIN  3    // Pin del relé
 
-// Pines de los Reles
-const int relayPin1 = D3;
-const int relayPin2 = D4;
+// Definir variables
+bool estadoBotonAnterior = HIGH;  // Estado anterior del botón
+unsigned long tiempoUltimaAccion = 0; // Tiempo de la última acción
+const unsigned long tiempoDebounce = 50; // Tiempo de debounce del botón
+const unsigned long tiempoReleOn = 200; // Tiempo que el relé permanece activo
+const unsigned long tiempoDesactivacionBoton = 500; // Tiempo de desactivación del botón
 
-ESP8266WebServer server(80);
-
+// Configuración
 void setup() {
-  Serial.begin(115200);
-
-  // Inicializar los pines de los Reles
-  pinMode(relayPin1, OUTPUT);
-  pinMode(relayPin2, OUTPUT);
-  digitalWrite(relayPin1, HIGH);
-  digitalWrite(relayPin2, HIGH);
-
-  // Conectar a la red Wi-Fi
-  WiFi.begin(ssid, password);
-  Serial.println("");
-
-  // Esperar a que se conecte
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("");
-  Serial.print("Conectado a la red Wi-Fi: ");
-  Serial.println(ssid);
-  Serial.print("Dirección IP: ");
-  Serial.println(WiFi.localIP());
-
-  // Configurar las rutas del servidor web
-  server.on("/", handleRoot);
-  server.on("/relay1on", relay1On);
-  server.on("/relay2on", relay2On);
-
-  // Iniciar el servidor web
-  server.begin();
-  Serial.println("Servidor web iniciado");
+  pinMode(BOTON_PIN, INPUT_PULLUP); // Configurar el pin del botón como entrada con pull-up
+  pinMode(RELE_PIN, OUTPUT);         // Configurar el pin del relé como salida
 }
 
+// Bucle principal
 void loop() {
-  // Manejar las solicitudes del servidor web
-  server.handleClient();
-}
+  // Leer el estado actual del botón
+  bool estadoBoton = digitalRead(BOTON_PIN);
 
-void handleRoot() {
-  // Página principal con botones para controlar los Reles
-  String html = "<html><head><title>Control de Reles</title></head><body>";
-  html += "<h1>Control de Porton</h1>";
-  html += "<h2>Rele 1</h2>";
-  html += "<form action='/relay1on'><button>Accionar</button></form>";
-  html += "<h1>Control de Puerta</h1>";
-  html += "<h2>Rele 2</h2>";
-  html += "<form action='/relay2on'><button>Accionar</button></form>";
-  html += "</body></html>";
-  server.send(200, "text/html", html);
-}
+  // Verificar si el botón ha sido presionado y ha pasado el tiempo de debounce
+  if (estadoBoton != estadoBotonAnterior && millis() - tiempoUltimaAccion > tiempoDebounce) {
+    // Actualizar el tiempo de la última acción
+    tiempoUltimaAccion = millis();
+    
+    // Cambiar el estado del relé
+    digitalWrite(RELE_PIN, HIGH); // Activar el relé
+    delay(tiempoReleOn);          // Esperar el tiempo de activación del relé
+    digitalWrite(RELE_PIN, LOW);  // Desactivar el relé
+    
+    // Desactivar el botón por un tiempo para evitar rebotes
+    delay(tiempoDesactivacionBoton);
+  }
 
-void relay1On() {
-  // Encender el Rele 1
-  digitalWrite(relayPin1, LOW);
-  delay(200); // Esperar 200 ms
-  digitalWrite(relayPin1, HIGH); // Apagar el Rele 1
-  server.send(200, "text/plain", "Rele 1 encendido y apagado despues de 200 ms");
-  delay(500);
+  // Actualizar el estado anterior del botón
+  estadoBotonAnterior = estadoBoton;
 }
-
-void relay2On() {
-  // Encender el Rele 2
-  digitalWrite(relayPin2, LOW);
-  delay(200); // Esperar 200 ms
-  digitalWrite(relayPin2, HIGH); // Apagar el Rele 2
-  server.send(200, "text/plain", "Rele 2 encendido y apagado despues de 200 ms");
-  delay(500);
-}
-
