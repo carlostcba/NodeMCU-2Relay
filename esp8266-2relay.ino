@@ -9,6 +9,9 @@ const char* password = "LSDoor2023*";
 const int relayPin1 = D3;
 const int relayPin2 = D4;
 
+bool relay1Enabled = true; // Variable para habilitar/deshabilitar el botón de Relay 1
+unsigned long lastActionTime = 0; // Variable para guardar el tiempo del último accionamiento
+
 ESP8266WebServer server(80);
 
 void setup() {
@@ -48,14 +51,31 @@ void setup() {
 void loop() {
   // Manejar las solicitudes del servidor web
   server.handleClient();
+  
+  // Verificar si ha pasado el tiempo de inactividad del Relay 1
+  if (!relay1Enabled && (millis() - lastActionTime >= 500)) {
+    relay1Enabled = true; // Habilitar el botón de Relay 1
+    handleRoot(); // Actualizar la página para mostrar el botón habilitado
+  }
 }
 
 void handleRoot() {
   // Página principal con botones para controlar los Reles
-  String html = "<html><head><title>Control de Reles</title></head><body>";
+  String html = "<html><head><title>Control de Reles</title>";
+  html += "<script>";
+  html += "function accionarRelay1() {";
+  html += "if (!document.getElementById('btnRelay1').disabled) {"; // Verificar si el botón está habilitado
+  html += "document.getElementById('btnRelay1').disabled = true;"; // Deshabilitar el botón
+  html += "document.getElementById('btnRelay1').innerText = 'Accionando...';"; // Cambiar el texto del botón
+  html += "var xhr = new XMLHttpRequest();";
+  html += "xhr.open('GET', '/relay1on', true);";
+  html += "xhr.send();";
+  html += "}";
+  html += "}";
+  html += "</script></head><body>";
   html += "<h1>Control de Porton</h1>";
   html += "<h2>Rele 1</h2>";
-  html += "<form action='/relay1on'><button>Accionar</button></form>";
+  html += "<button id='btnRelay1' onclick='accionarRelay1()'>Accionar</button>";
   html += "<h1>Control de Puerta</h1>";
   html += "<h2>Rele 2</h2>";
   html += "<form action='/relay2on'><button>Accionar</button></form>";
@@ -68,16 +88,12 @@ void relay1On() {
   digitalWrite(relayPin1, LOW);
   delay(200); // Esperar 200 ms
   digitalWrite(relayPin1, HIGH); // Apagar el Rele 1
-  server.send(200, "text/plain", "Rele 1 encendido y apagado despues de 200 ms");
-  delay(500);
+  lastActionTime = millis(); // Guardar el tiempo del último accionamiento
+  relay1Enabled = false; // Deshabilitar el botón de Relay 1
 }
-
 void relay2On() {
   // Encender el Rele 2
   digitalWrite(relayPin2, LOW);
   delay(200); // Esperar 200 ms
   digitalWrite(relayPin2, HIGH); // Apagar el Rele 2
-  server.send(200, "text/plain", "Rele 2 encendido y apagado despues de 200 ms");
-  delay(500);
 }
-
