@@ -80,7 +80,7 @@ void handleRoot() {
   html += "setTimeout(function() {";
   html += "btn1.innerHTML = 'Accionar';";
   html += "btn1.disabled = false;";
-  html += "}, 500);"; // Después de 500 ms, volver a habilitar el botón y cambiar el texto a "Accionar"
+  html += "}, 600);"; // Después de 600 ms, volver a habilitar el botón y cambiar el texto a "Accionar"
   html += "}";
   html += "}";
   html += "function accionarRelay2() {";
