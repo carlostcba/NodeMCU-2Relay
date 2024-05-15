@@ -68,7 +68,7 @@ void relay1On() {
   digitalWrite(relayPin1, LOW);
   delay(200); // Esperar 200 ms
   digitalWrite(relayPin1, HIGH); // Apagar el Rele 1
-  server.send(200, "text/plain", "Rele 1 encendido y apagado después de 200 ms");
+  server.send(200, "text/plain", "Rele 1 encendido y apagado despues de 200 ms");
   delay(500);
 }
 
@@ -77,7 +77,7 @@ void relay2On() {
   digitalWrite(relayPin2, LOW);
   delay(200); // Esperar 200 ms
   digitalWrite(relayPin2, HIGH); // Apagar el Rele 2
-  server.send(200, "text/plain", "Rele 2 encendido y apagado después de 200 ms");
+  server.send(200, "text/plain", "Rele 2 encendido y apagado despues de 200 ms");
   delay(500);
 }
 
