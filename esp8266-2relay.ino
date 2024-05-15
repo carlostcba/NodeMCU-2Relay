@@ -59,13 +59,18 @@ void handleRoot() {
   html += "xhr.open('GET', '/relay1on', true);";
   html += "xhr.send();";
   html += "}";
+  html += "function accionarRelay2() {";
+  html += "var xhr = new XMLHttpRequest();";
+  html += "xhr.open('GET', '/relay1on', true);";
+  html += "xhr.send();";
+  html += "}";
   html += "</script></head><body>";
   html += "<h1>Control de Porton</h1>";
   html += "<h2>Rele 1</h2>";
   html += "<button onclick='accionarRelay1()'>Accionar</button>";
   html += "<h1>Control de Puerta</h1>";
   html += "<h2>Rele 2</h2>";
-  html += "<form action='/relay2on'><button>Accionar</button></form>";
+  html += "<button onclick='accionarRelay2()'>Accionar</button>";
   html += "</body></html>";
   server.send(200, "text/html", html);
 }
