@@ -64,9 +64,9 @@ void handleRoot() {
   html += "</style>";
   html += "</head><body>";
   html += "<h1>Control de Reles</h1>";
-  html += "<h2>Rele 1</h2>";
+  html += "<h2>Porton</h2>";
   html += "<button id='btn1' onclick='accionarRelay1()' " + String(btn1Enabled ? "" : "disabled") + ">Accionar</button>";
-  html += "<h2>Rele 2</h2>";
+  html += "<h2>Puerta</h2>";
   html += "<button id='btn2' onclick='accionarRelay2()' " + String(btn2Enabled ? "" : "disabled") + ">Accionar</button>";
   html += "<script>";
   html += "function accionarRelay1() {";
@@ -94,7 +94,7 @@ void handleRoot() {
   html += "setTimeout(function() {";
   html += "btn2.innerHTML = 'Accionar';";
   html += "btn2.disabled = false;";
-  html += "}, 500);"; // Después de 500 ms, volver a habilitar el botón y cambiar el texto a "Accionar"
+  html += "}, 600);"; // Después de 600 ms, volver a habilitar el botón y cambiar el texto a "Accionar"
   html += "}";
   html += "}";
   html += "</script></body></html>";
