@@ -63,7 +63,7 @@ void handleRoot() {
   html += "h1 { margin-top: 100px; }";
   html += "h1 { margin-bottom: 50px; }";
   html += "h3 { color: #f29419; }";
-  html += "h3 { margin-top: 20px; }";
+  html += "h3 { margin-top: 50px; }";
   html += "button { padding: 20px 40px; font-size: 20px; margin: 5px; background-color: #ffc107; border: none; border-radius: 8px; color: #f8f9fa; font-weight: bold; }";
   html += "button:disabled { background-color: #6c757d; }";
   html += "</style>";
